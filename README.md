@@ -58,3 +58,6 @@ memory usage: 23.3+ MB
 
 In [6]:
 ```
+
+## See Also:
+[National Tax Agency - Corporate Number Publication Site](https://www.houjin-bangou.nta.go.jp/en/)
