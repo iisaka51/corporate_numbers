@@ -1,4 +1,4 @@
-Scraping Corporate Numbers.
+The scrapper for the Corporate Numbers.
 
 First of all, this project is just for my self study for scraping.
 
