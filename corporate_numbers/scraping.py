@@ -1,3 +1,5 @@
+import os
+import pandas as pd
 from urllib.error import HTTPError
 from zipfile import ZipFile
 from jp_prefecture import jp_prefectures as jp
@@ -59,15 +61,15 @@ class CNScrapper(object):
                 filename =c.replace(self._ATTACHFILE_PREFIX, '')
             except:
                 filename = None
-            return filenamee
+            return filename
 
     def download(self, prefecture='all'):
         prefecture = self.name_normalized(prefecture)
         try:
-            assert id in self.fileids.keys()
-            self.post_form['selDlFileNo'] = f'{id}'
+            assert prefecture in self.fileids.keys()
+            self.post_form['selDlFileNo'] = f'{self.fileids[prefecture]}'
             response = self.session.post( url=self._DOWNLOAD_URL,
-                                          data=self.post_from)
+                                          data=self.post_form)
 
         except AssertionError:
             raise DatasetError('id not available') from None
@@ -75,20 +77,21 @@ class CNScrapper(object):
         except HTTPError as err:
             raise DatasetError(err)
 
-        print(response.headers)
+        # print(response.headers)
         self.filename = self._get_filename(response.headers)
         with open(self.filename, 'wb') as save:
                 save.write(response.content)
         return self.filename
 
-    def extract_data(self, filepath):
+    def load_data(self, filepath):
+        df = None
         with ZipFile(filepath, 'r') as zipobj:
             for innerfile in zipobj.namelist():
                 if innerfile.endswith('csv'):
                     csvfile = zipobj.extract(innerfile)
-            else:
-                csvfile = None
-        return csvfile
+                    df = pd.read_csv(csvfile)
+                    os.unlink(csvfile)
+        return df
 
     def name_normalized(self, name):
         name = jp.alphabet2name(name)
