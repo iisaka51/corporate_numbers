@@ -15,9 +15,10 @@ class CNScrapper(object):
     _TOKEN_KEY = ( 'jp.go.nta.houjin_bangou.framework.web.common'
                    '.CNSFWTokenProcessor.request.token' )
     _CSV_UNICODE_TABLE_XPATH = '//*[@id="appForm"]/div[2]/div[2]/table/tbody'
+    _CSV_UNICODE_TABLE_SELECTOR = '#appForm > div.inBox21 > div:nth-child(7) > table'
     _ATTACHFILE_PREFIX="attachment; filename*=utf-8'jp'"
 
-    def __init__(self, user_agent=None):
+    def __init__(self):
         from scrapinghelper import Scraper
 
         self.scraper = Scraper()
@@ -35,7 +36,8 @@ class CNScrapper(object):
 
     def gathering_fileids(self, html):
         fileid_cache = dict()
-        htmltable =  html.xpath(self._CSV_UNICODE_TABLE_XPATH, first=True)
+        # htmltable =  html.xpath(self._CSV_UNICODE_TABLE_XPATH, first=True)
+        htmltable =  html.find(self._CSV_UNICODE_TABLE_SELECTOR, first=True)
         if htmltable is not None:
             atags = htmltable.find('a')
         else:
