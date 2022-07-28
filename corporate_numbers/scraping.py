@@ -18,12 +18,10 @@ class CNScrapper(object):
     _ATTACHFILE_PREFIX="attachment; filename*=utf-8'jp'"
 
     def __init__(self, user_agent=None):
-        from requests_html import HTMLSession
+        from scrapinghelper import Scraper
 
-        self.session = HTMLSession()
-        user_agent and self.ssessions.headers.update({'user-agent': user_agent})
-        self.response = self.session.get(self._INDEX_URL)
-        self.response.html.render(timeout=0, sleep=10)
+        self.scraper = Scraper()
+        self.response = self.scraper.request(self._INDEX_URL)
         self.fileids = self.gathering_fileids(self.response.html)
         self.token = self.response.html.find(f'input[name="{self._TOKEN_KEY}"]',
                                              first=True)
@@ -68,7 +66,7 @@ class CNScrapper(object):
         try:
             assert prefecture in self.fileids.keys()
             self.post_form['selDlFileNo'] = f'{self.fileids[prefecture]}'
-            response = self.session.post( url=self._DOWNLOAD_URL,
+            response = self.scraper.session.post( url=self._DOWNLOAD_URL,
                                           data=self.post_form)
 
         except AssertionError:
